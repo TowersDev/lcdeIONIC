@@ -1,0 +1,7 @@
+{
+  "name": "lcde",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
