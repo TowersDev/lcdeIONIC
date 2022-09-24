@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Home</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content [fullscreen]="true">
+  <ion-content>
+    <ion-list *ngIf="bares.length > 0">
+      <ion-item *ngFor="let bar of bares">
+        <ion-label>{{bar.name}}</ion-label>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="bares.length === 0">
+      <ion-item *ngFor="let bar of [1,2,3,4]">
+        <ion-skeleton-text [animated]="true" style="width: 80px"></ion-skeleton-text>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-content>

@@ -1,15 +1,34 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { LoginPage } from './pages/account/login/login.page';
+
 
 const routes: Routes = [
-  {
-    path: '',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
-  },
+
   {
     path: 'login',
-    loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
-  }
+    loadChildren: () => import('./pages/account/login/login.module').then(m => m.LoginPageModule),
+    // canLoad: [IntroGuard, AutoLoginGuard]
+  },
+  {
+    path: 'register',
+    loadChildren: () => import('./pages/account/register/register.module').then(m => m.RegisterPageModule),
+    // canLoad: [IntroGuard, AutoLoginGuard]
+  },
+  {
+    path: 'intro',
+    loadChildren: () => import('./pages/intro/intro.module').then( m => m.IntroPageModule)
+  },
+  {
+    path: 'tabs',
+    loadChildren: () => import('./components/tabs/tabs.module').then(m => m.TabsPageModule),
+    // canLoad: [AuthGuard]
+  },
+  {
+    path: '',
+    redirectTo: '/login',
+    pathMatch: 'full'
+  },
 ];
 @NgModule({
   imports: [

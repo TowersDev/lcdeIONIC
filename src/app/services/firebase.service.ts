@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+
+import {
+  AngularFirestore,
+} from '@angular/fire/compat/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -7,8 +10,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 export class FirebaseService {
   constructor(public firestore: AngularFirestore) {}
 
-  login<>(data: tipo, enlace: string) {
-    const ref = this.firestore.collection<>(enlace);
-    return ref.add(data);
+  getBares() {
+    return this.firestore.collection('bares').valueChanges();
   }
 }

@@ -1,12 +1,13 @@
 import { Injectable, NgZone } from '@angular/core';
 import * as auth from 'firebase/auth';
-import { User } from './user';
+import { User } from '../shared/user';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import {
   AngularFirestore,
   AngularFirestoreDocument,
 } from '@angular/fire/compat/firestore';
+import { ToastController } from '@ionic/angular';
 @Injectable({
   providedIn: 'root',
 })
@@ -16,7 +17,8 @@ export class AuthenticationService {
     public afStore: AngularFirestore,
     public ngFireAuth: AngularFireAuth,
     public router: Router,
-    public ngZone: NgZone
+    public ngZone: NgZone,
+    public toastController: ToastController,
   ) {
     this.ngFireAuth.authState.subscribe((user) => {
       if (user) {
@@ -41,6 +43,14 @@ export class AuthenticationService {
     return user.emailVerified !== false ? true : false;
   }
 
+  async presentToast(message: string) {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+    });
+    toast.present();
+  }
+
   // Login in with email/password
   signIn(email, password) {
     return this.ngFireAuth.signInWithEmailAndPassword(email, password);
@@ -51,20 +61,19 @@ export class AuthenticationService {
   }
   // Email verification when new user register
   sendVerificationMail() {
-    return this.ngFireAuth.currentUser.then((user) =>
-      user.sendEmailVerification().then(() => {
+    return this.ngFireAuth.currentUser.then((user) => user.sendEmailVerification().then(() => {
         this.router.navigate(['login']);
-      })
-    );
+      }));
   }
   // Recover password
   passwordRecover(passwordResetEmail) {
     return this.ngFireAuth
       .sendPasswordResetEmail(passwordResetEmail)
       .then(() => {
-        window.alert(
-          'Password reset email has been sent, please check your inbox.'
-        );
+        // window.alert(
+        //   ''
+        // );
+        this.presentToast('Password reset email has been sent, please check your inbox.');
       })
       .catch((error) => {
         window.alert(error);
@@ -73,17 +82,23 @@ export class AuthenticationService {
 
   // Sign in with Gmail
   googleAuth() {
-    return this.AuthLogin(new auth.GoogleAuthProvider());
+    return this.authLogin(new auth.GoogleAuthProvider());
   }
+
+    // Sign in with Facebook
+    facebookAuth() {
+      return this.authLogin(new auth.FacebookAuthProvider());
+    }
+
   // Auth providers
   authLogin(provider) {
     return this.ngFireAuth
       .signInWithPopup(provider)
       .then((result) => {
         this.ngZone.run(() => {
-          this.router.navigate(['dashboard']);
+          this.router.navigate(['tabs']);
         });
-        this.SetUserData(result.user);
+        this.setUserData(result.user);
       })
       .catch((error) => {
         window.alert(error);
