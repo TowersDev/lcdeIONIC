@@ -24,7 +24,6 @@ export class AccountPage implements OnInit {
   user: any;
   imageUrl: any;
   url: any;
-  private win: any = window;
   constructor(
     public authService: AuthenticationService,
     public ngFireAuth: AngularFireAuth,
@@ -84,40 +83,42 @@ export class AccountPage implements OnInit {
       correctOrientation: true
     };
 
-    this.camera.getPicture(options).then((result) => {
-      console.log('camera url', result);
-      this.imageUrl =   this.webView.convertFileSrc(result);
-      // this.actualizarAvatar(this.imageUrl);
-      this.uploadImage(this.imageUrl)
-      .then(() => {
-        this.actualizarAvatar(this.imageUrl);
-      })
-      .catch((res) => {
-        this.presentToast(res);
-      });
+    this.camera.getPicture(options).then((image) => {
+        this.imageUrl =   this.webView.convertFileSrc(image);
+        this.uploadImage(this.imageUrl)
+        .then(() => {
+          this.actualizarAvatar(this.imageUrl);
+        })
+        .catch((error) => {
+          this.presentToast(error);
+        });
     }, error => {
-      console.log(error);
-      this.presentToast(error);
+      console.log('No se ha realizado ninguna foto');
     });
   }
 
   elegirDesdeGallery(){
     const options: ImagePickerOptions = {
       quality: 100,
-      maximumImagesCount: 1
+      maximumImagesCount: 1,
     };
     this.imagePicker.getPictures(options).then((image) => {
-      this.presentToast(image);
+      if(image.length > 0) {
 
-      // eslint-disable-next-line @typescript-eslint/prefer-for-of
-      for(let i=0; i<image.length; i++){
-        this.url =  this.webView.convertFileSrc(image[i]);
+        // eslint-disable-next-line @typescript-eslint/prefer-for-of
+        for(let i=0; i<image.length; i++){
+          this.url =  this.webView.convertFileSrc(image[i]);
+        }
+        this.uploadImage(this.url)
+        .then(() => {
+          this.actualizarAvatar(this.imageUrl);
+        })
+        .catch((error) => {
+          this.presentToast(error);
+        });
       }
-
-      this.actualizarAvatar(this.url);
     }, error => {
-      console.log(error);
-      this.presentToast(error);
+      console.log('No se ha seleccionado ninguna imagen');
     });
   }
 
